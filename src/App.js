@@ -1,23 +1,33 @@
-import logo from './logo.svg';
 import './App.css';
+import { useState, useEffect } from "react";
+import useThrottle from './custom-hook/use-throttle';
 
 function App() {
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  const handleResize = () => {
+    setWindowSize({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+  }
+
+  const throttledHandleResize = useThrottle(handleResize, 1000);
+
+  useEffect(() => {
+    window.addEventListener("resize", throttledHandleResize);
+
+    return () => {
+      window.removeEventListener("resize", throttledHandleResize);
+    };
+  },[]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      Window Size: {windowSize.width} X {windowSize.height}
     </div>
   );
 }
